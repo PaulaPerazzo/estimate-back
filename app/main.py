@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from internal import admin
-from routers import project, user
+from usuario import usuario
 from os import environ as env
 from fastapi.middleware.cors import CORSMiddleware
+import database.model as model
+from database.config import engine
+
+model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -20,8 +24,7 @@ app.add_middleware(
 )
 
 # Incluir Rotas
-app.include_router(user.router, tags=["User"])
-app.include_router(project.router, tags=["Project"])
+app.include_router(usuario.router,prefix="/usuario", tags=["User"])
 app.include_router(admin.router,tags=["Admin"])
 
 # Get da Main

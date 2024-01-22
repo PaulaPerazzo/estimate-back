@@ -3,11 +3,13 @@ version: '3.8'
 services:
   web:
     container_name: "backend-estimate"
-    build: .
-    command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
-      - .env
+      - app/.env
     ports:
       - 8000:8000
+    restart: always
     volumes:
       - .:/app
