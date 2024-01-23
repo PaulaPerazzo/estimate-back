@@ -1,88 +1,41 @@
-from fastapi import APIRouter
-from typing import List
-from uuid import uuid4
-from models import Gender, Role, User, UpdateUser
-from fastapi import HTTPException
-from uuid import UUID
+import models
+from database.config import SessionLocal
+from typing import Callable, List
+from sqlalchemy.orm import Session
+from fastapi import FastAPI, HTTPException, Depends, status, APIRouter
+from models import UserBase
+from database.config import engine
 
-router = APIRouter()
+models.Base.metadata.create_all(bind=engine)
 #Database
+router = APIRouter()
 
-db: List[User] = [
-    User(
-        id=uuid4(),
-        first_name="John",
-        last_name="Doe",
-        gender=Gender.male,
-        roles=[Role.business],
-    ),
-    User(
-        id=uuid4(),
-        first_name="Jane",
-        last_name="Doe",
-        gender=Gender.female,
-        roles=[Role.business],
-    ),
-    User(
-        id=uuid4(),
-        first_name="James",
-        last_name="Gabriel",
-        gender=Gender.male,
-        roles=[Role.business],
-    ),
-    User(
-        id=uuid4(),
-        first_name="Eunit",
-        last_name="Eunit",
-        gender=Gender.male,
-        roles=[Role.admin, Role.dev],
-    ),
-]
+app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
+    
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-#GET ALL
-@router.get("/users")
-async def get_users():
-    return db
+def db_dependency(get_db: Callable[[], Session] = Depends(get_db)):
+    return get_db()
 
-#GET BY ID
-@router.get("/users/{id}")
-async def read_user(id: UUID):
-    for user in db:
-        if user.id == id:
-            return user
-    raise HTTPException(status_code=404, detail=f"Não foi possivel achar usuário com o id: {id}")
+@router.post("/users/", status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserBase, db: db_dependency):
+    db_user = models.User(**user.model_dump())
+    db.add(db_user)
+    db.commit()
 
-#CREATE
 
-@router.post("/users")
-async def create_user(user: User):
-    db.append(user)
-    return {"detail": f"Usuário criado! id: {user.id}"}
+@app.get("/users/{user_id}", status_code=status.HTTP_200_OK)
+async def read_user(user_id: int, db: db_dependency):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
 
-#UPDATE
-
-@router.put("/users/{id}")
-async def update_user(user_update: UpdateUser, id: UUID):
-    for user in db:
-        if user.id == id:
-            if user_update.first_name is not None:
-                user.first_name = user_update.first_name
-        if user_update.last_name is not None:
-            user.last_name = user_update.last_name
-        if user_update.roles is not None:
-            user.roles = user_update.roles
-        return user.id
-    raise HTTPException(status_code=404, detail=f"Não foi encontrado usuário com ID: {id}")
-
-#DELETE
-
-@router.delete("/users/{id}")
-async def delete_user(id: UUID):
-    for user in db:
-        if user.id == id:
-            db.remove(user)
-        return
-    raise HTTPException(
-        status_code=404, detail=f"Delete user failed, id {id} not found."
-    )
+    if user is None:
+        raise HTTPException(status_code=404, detail='User not found')
+    
+    return user

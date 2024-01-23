@@ -4,10 +4,20 @@ services:
   web:
     container_name: "backend-estimate"
     build: .
-    command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
+    depends_on: 
+      - mysql
+    command: sh -c "uvicorn main:app --reload --port 8000"
     env_file:
       - .env
     ports:
       - 8000:8000
     volumes:
       - .:/app
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: estimate_db
+    ports:
+      - "3307:3306"

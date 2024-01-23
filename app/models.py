@@ -2,41 +2,30 @@
 from typing import List, Optional
 from uuid import UUID, uuid4
 from enum import Enum
+from database.config import Base
 from pydantic import BaseModel
+from sqlalchemy import Boolean, Column, Integer, String
 
-class Gender(str, Enum):
-    male = "Masculino"
-    female = "Feminino"
-class Role(str, Enum):
-    admin = "Admin"
-    dev = "Dev"
-    business = "Business"
+class UserBase(BaseModel):
+    username: str
 
-#Usuario
+class User(Base):
+    __tablename__ = 'users'
 
-class UpdateUser(BaseModel):
-    first_name: Optional[str]
-    last_name: Optional[str]
-    roles: Optional[List[Role]]
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True)
 
-class User(BaseModel):
-    id: Optional[UUID] = uuid4()
-    first_name: str
-    last_name: str
-    gender: Gender
-    roles: List[Role]
 
-#Projeto
+class Post(Base):
+    __tablename__ = 'posts'
 
-class Project(BaseModel):
-    id: Optional[UUID] = uuid4()
-    nome: str
-    descricao: str
-    data_inicio: str
-    data_conclusao_prevista: str
-    data_conclusao_real: str
-    num_desenvolvedores: int
-    horas_desenvolvimento: int
-    gargalos: str
-    palavras_chave: str
-    empresa_id: str
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(50), unique=False)
+    description = Column(String(100), unique=False)
+
+class Links(Base):
+    __tablename__ = 'links'
+
+    id = Column(Integer, primary_key=True, index=True)
+    link = Column(String(50), unique=False)
+    description = Column(String(100), unique=False)
