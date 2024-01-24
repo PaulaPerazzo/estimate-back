@@ -4,28 +4,36 @@ from uuid import UUID, uuid4
 from enum import Enum
 from database.config import Base
 from pydantic import BaseModel
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, Float
+from datetime import datetime
 
+
+### TABLE user (input model (UserBase) and table columns (User))
 class UserBase(BaseModel):
-    username: str
+    name: str
+    email: str
+    password: str
+    experience: str
+    user_type: int
+    week_hours: float
+    company_id: int
+    current_job: str
+    nickname: str
+    expert: bool
+
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True)
-
-
-class Post(Base):
-    __tablename__ = 'posts'
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(50), unique=False)
-    description = Column(String(100), unique=False)
-
-class Links(Base):
-    __tablename__ = 'links'
-
-    id = Column(Integer, primary_key=True, index=True)
-    link = Column(String(50), unique=False)
-    description = Column(String(100), unique=False)
+    name = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
+    password = Column(String(50), nullable=False)
+    experience = Column(String(100))
+    date_register = Column(DateTime, default=func.now())
+    user_type = Column(Integer, nullable=False)
+    week_hours = Column(Float)
+    current_job = Column(String(100), nullable=False)
+    nickname = Column(String(40), unique=True, nullable=False)
+    expert = Column(Boolean, nullable=False)
+    company_id = Column(Integer, nullable=False)
