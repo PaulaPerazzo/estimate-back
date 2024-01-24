@@ -17,13 +17,22 @@ class UsuarioSchema(BaseModel):
     empresa_id: str
     cargo_atual: str
     nickname: str
-    especialista: str
+    especialista: bool
 
     class Config:
         orm_mode = True
 
 class RequestUsuario(BaseModel):
-    parameter: UsuarioSchema = Field(...)
+    nome: str
+    email: str
+    senha: str
+    experiencia: str
+    tipo: str
+    horas_semanais: int
+    empresa_id: str
+    cargo_atual: str
+    nickname: str
+    especialista: bool
 
 class Response (GenericModel, Generic[T]):
     code: str
