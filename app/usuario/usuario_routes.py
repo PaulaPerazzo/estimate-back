@@ -4,6 +4,7 @@ from database.model import Usuario
 from fastapi import FastAPI
 from datetime import datetime
 import pytz
+import json
 
 def f_get_usuario_all(db:Session, skip: int=0, limit: int = 100):
 
@@ -46,17 +47,14 @@ def f_remove_usuario(db:Session, usuario_id: int):
 
 def f_update_usuario(db:Session,usuario_id: int, nome: str,email: str,senha: str,experiencia: str,data_cadastro: datetime,tipo: str,horas_semanais: int,empresa_id: str,cargo_atual: str,nickname: str,especialista: str):
 
-    fuso_horario = pytz.timezone('America/Sao_Paulo')
-    data_atual = data_cadastro.astimezone(fuso_horario)
 
-
-    _usuario = f_get_usuario_by_id(db=db,usuario_id=usuario_id)
+    _usuario = f_get_usuario_by_id(db,usuario_id)
     _usuario.id = usuario_id
     _usuario.nome = nome
     _usuario.email = email
     _usuario.senha = senha
     _usuario.experiencia = experiencia
-    _usuario.data_cadastro = data_atual
+    _usuario.data_cadastro = data_cadastro
     _usuario.tipo = tipo
     _usuario.horas_semanais = horas_semanais
     _usuario.empresa_id = empresa_id
@@ -65,6 +63,5 @@ def f_update_usuario(db:Session,usuario_id: int, nome: str,email: str,senha: str
     _usuario.especialista = especialista
 
     db.commit()
-    db.refresh()
 
     return _usuario

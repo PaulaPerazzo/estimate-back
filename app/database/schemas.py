@@ -19,6 +19,8 @@ class UsuarioSchema(BaseModel):
     nickname: str
     especialista: bool
 
+    def from_orm(cls, usuario):
+        return cls(**usuario.__dict__)
     class Config:
         orm_mode = True
 
@@ -33,7 +35,6 @@ class RequestUsuario(BaseModel):
     cargo_atual: str
     nickname: str
     especialista: bool
-
 class Response (GenericModel, Generic[T]):
     code: str
     status: str
