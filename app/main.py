@@ -219,3 +219,59 @@ async def delete_task(task_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "project deleted"}
+
+
+### CRUD valuations ###
+@app.post("/valuation/", status_code=status.HTTP_201_CREATED, tags=["Avaliações"])
+async def create_valuation(valuation: ValuationBase, db: Session = Depends(get_db)):
+    db_valuation = Valuation(**valuation.dict())
+    db.add(db_valuation)
+    db.commit()
+
+    return valuation
+
+
+@app.get("/valuation/", status_code=status.HTTP_200_OK, tags=["Avaliações"])
+async def read_valuation(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    valuation = db.query(Valuation).offset(skip).limit(limit).all()
+    return valuation
+
+
+@app.get("/valuation/{valuation_id}", status_code=status.HTTP_200_OK, tags=["Avaliações"])
+async def read_valuation_by_id(valuation_id: int, db: Session = Depends(get_db)):
+    valuation = db.query(Valuation).filter(Valuation.id == valuation_id).first()
+
+    if valuation is None:
+        raise HTTPException(status_code=404, detail="Valuation not found")
+
+    return valuation
+
+
+@app.put("/valuation/{valuation_id}", status_code=status.HTTP_200_OK, tags=["Avaliações"])
+async def update_valuation(
+    valuation_id: int, update_valuation: ValuationBase, db: Session = Depends(get_db)
+):
+    valuation = db.query(Valuation).filter(Valuation.id == valuation_id).first()
+
+    if valuation is None:
+        raise HTTPException(status_code=404, detail="Valuation not found")
+
+    for key, value in update_valuation.dict().items():
+        setattr(valuation, key, value)
+
+    db.commit()
+
+    return update_valuation
+
+
+@app.delete("/valuation/{valuation_id}", status_code=status.HTTP_200_OK, tags=["Avaliações"])
+async def delete_valuation(valuation_id: int, db: Session = Depends(get_db)):
+    valuation = db.query(Valuation).filter(Valuation.id == valuation_id).first()
+
+    if valuation is None:
+        raise HTTPException(status_code=404, detail="Valuation not found")
+
+    db.delete(valuation)
+    db.commit()
+
+    return {"message": "valuation deleted"}

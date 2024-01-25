@@ -7,8 +7,8 @@ from database.config import Base
 ### TABLE valuation (input model (ValuationBase) and table columns (Valuation))
 class ValuationBase(BaseModel):
     valuation: str
-    user_id: str
-    task_id: str
+    user_id: int
+    task_id: int
 
 class Valuation(Base):
     __tablename__ = "valuations"
