@@ -1,11 +1,12 @@
 from typing import Callable
-from models.project import ProjectBase, Project
 from database.config import SessionLocal
 from fastapi import FastAPI, Depends, status, HTTPException
 from routers.user import db_dependency
 from os import environ as env
 from fastapi.middleware.cors import CORSMiddleware
 from models.user import User, UserBase
+from models.project import ProjectBase, Project
+from models.task import TaskBase, Task
 
 from sqlalchemy.orm import Session
 

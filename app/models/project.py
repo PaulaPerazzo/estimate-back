@@ -18,7 +18,7 @@ class ProjectBase(BaseModel):
     date_predicted_conclusion: datetime
     date_conclusion: datetime
     developers_quantity: int
-    develop_hours: int
+    develop_hours: float
     stack: str
     xp_level: str
     company_id: int
