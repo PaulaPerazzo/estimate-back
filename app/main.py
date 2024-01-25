@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models.user import User, UserBase
 from models.project import ProjectBase, Project
 from models.task import TaskBase, Task
+from models.valuation import ValuationBase, Valuation
 
 from sqlalchemy.orm import Session
 
@@ -159,6 +160,62 @@ async def delete_project(project_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Project not found")
 
     db.delete(project)
+    db.commit()
+
+    return {"message": "project deleted"}
+
+
+### CRUD tasks ###
+@app.post("/task/", status_code=status.HTTP_201_CREATED, tags=["Atividades"])
+async def create_task(task: TaskBase, db: Session = Depends(get_db)):
+    db_task = Task(**task.dict())
+    db.add(db_task)
+    db.commit()
+
+    return task
+
+
+@app.get("/task/", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def read_task(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    tasks = db.query(Task).offset(skip).limit(limit).all()
+    return tasks
+
+
+@app.get("/task/{task_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def read_task_by_id(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return task
+
+
+@app.put("/task/{task_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def update_task(
+    task_id: int, update_task: TaskBase, db: Session = Depends(get_db)
+):
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    for key, value in update_task.dict().items():
+        setattr(task, key, value)
+
+    db.commit()
+
+    return update_task
+
+
+@app.delete("/task/{task_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def delete_task(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db.delete(task)
     db.commit()
 
     return {"message": "project deleted"}
