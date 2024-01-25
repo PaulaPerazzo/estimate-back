@@ -2,10 +2,12 @@
 from typing import List, Optional
 from uuid import UUID, uuid4
 from enum import Enum
-from database.config import Base
+
 from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, Float
 from datetime import datetime
+
+from database.config import Base
 
 
 ### TABLE user (input model (UserBase) and table columns (User))
@@ -37,3 +39,4 @@ class User(Base):
     nickname = Column(String(40), unique=True, nullable=False)
     expert = Column(Boolean, nullable=False)
     company_id = Column(Integer, nullable=False)
+ 
