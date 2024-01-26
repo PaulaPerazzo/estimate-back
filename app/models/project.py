@@ -6,7 +6,7 @@ from enum import Enum
 from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, Float
 from datetime import datetime
-
+from sqlalchemy.orm import relationship
 from database.config import Base
 
 
@@ -40,3 +40,5 @@ class Project(Base):
     xp_level = Column(String(100), nullable=False)
     company_id = Column(Integer, nullable=False)
     company_field = Column(String(100), nullable=False)
+    users = relationship("UsuarioProjeto", back_populates="project")
+

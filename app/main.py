@@ -1,13 +1,13 @@
 from typing import Callable
 from database.config import SessionLocal
 from fastapi import FastAPI, Depends, status, HTTPException
-from routers.user import db_dependency
 from os import environ as env
 from fastapi.middleware.cors import CORSMiddleware
 from models.user import User, UserBase
 from models.project import ProjectBase, Project
 from models.task import TaskBase, Task
 from models.valuation import ValuationBase, Valuation
+from models.user_project import UsuarioProjeto
 
 from sqlalchemy.orm import Session
 
@@ -111,9 +111,21 @@ async def read_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
 ### CRUD project ###
 @app.post("/project/", status_code=status.HTTP_201_CREATED, tags=["Projetos"])
-async def create_project(project: ProjectBase, db: Session = Depends(get_db)):
+async def create_project(project: ProjectBase, user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     db_project = Project(**project.dict())
     db.add(db_project)
+    db.commit()
+    db.refresh(db_project)
+
+    project_object = Project
+    print(project_object)
+    user_project_association = UsuarioProjeto(user_id=user_id, project_id=db_project.id)
+    db.add(user_project_association)
     db.commit()
 
     return project

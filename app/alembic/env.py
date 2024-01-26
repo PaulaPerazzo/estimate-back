@@ -20,12 +20,13 @@ from database.config import Base
 from models.project import Project
 from models.task import Task
 from models.user import User
-from models.user_project import UserProject
+from models.user_project import UsuarioProjeto
 from models.valuation import Valuation
 
 target_metadata = Task.metadata
 target_metadata = User.metadata
-target_metadata = UserProject.metadata
+target_metadata = Project.metadata
+target_metadata = UsuarioProjeto.metadata
 target_metadata = Valuation.metadata
 # target_metadata = None
 

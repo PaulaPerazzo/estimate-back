@@ -1,12 +1,23 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, ForeignKey, Table
 from database.config import Base
 
+# models.py
+from typing import List, Optional
+from uuid import UUID, uuid4
+from enum import Enum
 
-### TABLE user_project (table columns (UserProject))
-class UserProject(Base):
-    __tablename__ = "user_projects"
+from pydantic import BaseModel
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, Float
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from database.config import Base
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, nullable=False)
-    project_id = Column(Integer, nullable=False)
- 
+class UsuarioProjeto(Base):
+    __tablename__ = "usuario_projeto"
+
+    id = Column(Integer, primary_key=True, autoincrement=True, server_default="1")
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), index=True)
+    
+    user = relationship("User", back_populates="projects")
+    project = relationship("Project", back_populates="users")

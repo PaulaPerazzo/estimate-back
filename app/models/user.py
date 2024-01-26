@@ -5,10 +5,9 @@ from enum import Enum
 
 from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, Float
+from sqlalchemy.orm import relationship
 from datetime import datetime
-
 from database.config import Base
-
 
 ### TABLE user (input model (UserBase) and table columns (User))
 class UserBase(BaseModel):
@@ -39,4 +38,4 @@ class User(Base):
     nickname = Column(String(40), unique=True, nullable=False)
     expert = Column(Boolean, nullable=False)
     company_id = Column(Integer, nullable=False)
- 
+    projects = relationship("UsuarioProjeto", back_populates="user")
