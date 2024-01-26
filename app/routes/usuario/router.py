@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Path, Depends
 from database.config import SessionLocal
 from sqlalchemy.orm import Session
 from database.schemas import UsuarioSchema,RequestUsuario,Response
-from usuario import usuario_routes
+from routes.usuario import functions as usuario_routes
 from datetime import datetime
 import pytz
 

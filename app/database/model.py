@@ -15,7 +15,6 @@ class Usuario(Base):
     data_cadastro = Column(DateTime(timezone=True), default=func.now())
     tipo = Column(String)
     horas_semanais = Column(Integer)
-    empresa_id = Column(String)
     cargo_atual = Column(String)
     nickname = Column(String)
     especialista = Column(Boolean)
@@ -40,16 +39,7 @@ class Projeto(Base):
     horas_desenvolvimento = Column(Integer)
     stack = Column(String)
     senioridade = Column(String)
-    empresa_id = Column(String)
     area = Column(String)
-
-class Empresa(Base):
-    __tablename__ = 'empresa'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    nome = Column(String)
-    email = Column(String)
-    senha = Column(String)
 
 class Avaliacao(Base):
     __tablename__ = 'avaliacao'
