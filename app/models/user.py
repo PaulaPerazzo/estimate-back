@@ -41,3 +41,4 @@ class User(Base):
     projects = relationship("UsuarioProjeto", back_populates="user")
 
     tasks = relationship("Task", back_populates="user")
+    valuations = relationship("Valuation", back_populates="user")

@@ -1,8 +1,8 @@
 # models.py
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from database.config import Base
-
+from sqlalchemy.orm import relationship
 
 ### TABLE valuation (input model (ValuationBase) and table columns (Valuation))
 class ValuationBase(BaseModel):
@@ -15,5 +15,9 @@ class Valuation(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     valuation = Column(String(500), nullable=False)
-    user_id = Column(Integer, nullable=True)
-    task_id = Column(Integer, nullable=True)
+
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    user = relationship("User", back_populates="valuations")
+
+    task_id = Column(Integer, ForeignKey("tasks.id", ondelete="SET NULL"))
+    task = relationship("Task", back_populates="valuations")

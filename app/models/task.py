@@ -48,3 +48,5 @@ class Task(Base):
 
     project_id = Column(Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True)
     project = relationship("Project", back_populates="tasks")
+
+    valuations = relationship("Valuation", back_populates="task")
