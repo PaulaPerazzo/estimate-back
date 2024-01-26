@@ -42,3 +42,4 @@ class Project(Base):
     company_field = Column(String(100), nullable=False)
     users = relationship("UsuarioProjeto", back_populates="project")
 
+    tasks = relationship("Task", back_populates="project")

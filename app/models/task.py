@@ -1,6 +1,7 @@
 # models.py
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String, DateTime, func, Float
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, func
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from database.config import Base
 
@@ -41,5 +42,9 @@ class Task(Base):
     libs = Column(String(300))
     sugestions = Column(String(300))
     action= Column(String(300))
-    user_id = Column(Integer, nullable=True)
-    project_id = Column(Integer, nullable=True)
+
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    user = relationship("User", back_populates="tasks")
+
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True)
+    project = relationship("Project", back_populates="tasks")

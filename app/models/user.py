@@ -39,3 +39,5 @@ class User(Base):
     expert = Column(Boolean, nullable=False)
     company_id = Column(Integer, nullable=False)
     projects = relationship("UsuarioProjeto", back_populates="user")
+
+    tasks = relationship("Task", back_populates="user")
