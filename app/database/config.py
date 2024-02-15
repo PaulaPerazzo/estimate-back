@@ -14,7 +14,7 @@ connection_string = URL.create(
 )
 
 # engine = create_engine(env['DATABASE_URL'])
-# engine = create_engine(URL_DATABASE)
-engine = create_engine(connection_string)
+engine = create_engine(URL_DATABASE)
+# engine = create_engine(connection_string)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base: DeclarativeMeta = declarative_base()

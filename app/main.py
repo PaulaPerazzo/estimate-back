@@ -18,6 +18,7 @@ origins = [
     "http://localhost:8000",
     "http://localhost:3306",
     "http://localhost:3307",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -177,6 +178,25 @@ async def delete_project(project_id: int, db: Session = Depends(get_db)):
     return {"message": "project deleted"}
 
 
+@app.get("/project/userProject/{user_id}", status_code=status.HTTP_200_OK, tags=["Projetos"])
+async def read_user_projects(user_id: int, db: Session = Depends(get_db)):
+    project = db.query(UsuarioProjeto).filter(UsuarioProjeto.user_id == user_id).all()
+
+    if project is None:
+        raise HTTPException(status_code=404, detail="Projects not found for this user")
+    
+    projects_data: List[dict] = []
+
+    for value in project:
+        projects_data.append({
+            'id': value.id,
+            'user': value.user,
+            'project': value.project
+        })
+
+    return projects_data
+
+
 ### CRUD tasks ###
 @app.post("/task/", status_code=status.HTTP_201_CREATED, tags=["Atividades"])
 async def create_task(task: TaskBase, db: Session = Depends(get_db)):
@@ -199,8 +219,34 @@ async def read_task_by_id(task_id: int, db: Session = Depends(get_db)):
 
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
+    
+    user = task.user.name if task.user else "Unknown"
+    
+    public_task = {
+        'id': task.id,
+        'task_action': task.task_action,
+        'created_by': user,
+        'component_action': task.component_task
+    }
 
-    return task
+    return public_task
+
+
+@app.get("/task-info/{task_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def read_task_by_id(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    user = task.user.name if task.user else "Unknown"
+    
+    task_info = {
+        **task.__dict__,
+        'created_by': user
+    }
+
+    return task_info
 
 
 @app.put("/task/{task_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
@@ -233,6 +279,24 @@ async def delete_task(task_id: int, db: Session = Depends(get_db)):
     return {"message": "project deleted"}
 
 
+@app.get("/task/projectTask/{project_id}", status_code=status.HTTP_200_OK, tags=["Atividades"])
+async def read_task_by_project(project_id: int, db: Session = Depends(get_db)):
+    tasks = db.query(Task).filter(Task.project_id == project_id).all()
+
+    if tasks is None:
+        raise HTTPException(status_code=404, detail="Tasks not found for this project")
+    
+    tasks_data = []
+
+    for task in tasks:
+        tasks_data.append({
+            **task.__dict__,
+            'project': task.project
+        })
+
+    return tasks_data
+
+
 ### CRUD valuations ###
 @app.post("/valuation/", status_code=status.HTTP_201_CREATED, tags=["Avaliações"])
 async def create_valuation(valuation: ValuationBase, db: Session = Depends(get_db)):
@@ -257,6 +321,25 @@ async def read_valuation_by_id(valuation_id: int, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="Valuation not found")
 
     return valuation
+
+@app.get("/valuation/task-comments/{task_id}", status_code=status.HTTP_200_OK, tags=["Avaliações"])
+async def read_all_task_valuations(task_id: int, db: Session = Depends(get_db)):
+    valuation = db.query(Valuation).filter(Valuation.task_id == task_id).all()
+
+    if valuation is None:
+        raise HTTPException(status_code=404, detail="Valuation not found")
+    
+    comments_data: List[dict] = []
+
+    for value in valuation:
+        comments_data.append({
+            'id': value.id,
+            'user': value.user,
+            'task': value.task,
+            'comment': value.valuation,
+        })
+
+    return comments_data
 
 
 @app.put("/valuation/{valuation_id}", status_code=status.HTTP_200_OK, tags=["Avaliações"])

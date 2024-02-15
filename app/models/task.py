@@ -14,13 +14,16 @@ class TaskBase(BaseModel):
     date_predicted_conclusion: datetime
     date_conclusion: datetime
     develop_hours: float
+    develop_predict_hours: float
     problems: str
     keywords: str
     requirements: str
     framework: str
     libs: str
     sugestions: str
-    action: str
+    task_action: str
+    component_action: str
+    seniority: str
     user_id: int
     project_id: int
 
@@ -35,13 +38,16 @@ class Task(Base):
     date_predicted_conclusion = Column(DateTime, nullable=False)
     date_conclusion = Column(DateTime, default=func.now())
     develop_hours = Column(Float)
+    develop_predict_hours = Column(Float)
     problems = Column(String(200))
     keywords = Column(String(100), nullable=True)
     requirements = Column(String(300))
     framework = Column(String(100))
     libs = Column(String(300))
     sugestions = Column(String(300))
-    action= Column(String(300))
+    task_action = Column(String(300))
+    component_action = Column(String(300))
+    seniority = Column(String(300))
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     user = relationship("User", back_populates="tasks")
