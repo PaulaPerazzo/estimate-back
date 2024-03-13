@@ -197,6 +197,14 @@ async def read_user_projects(user_id: int, db: Session = Depends(get_db)):
 
     return projects_data
 
+@app.post("/project/userProject/{user_id}/{project_id}", status_code=status.HTTP_200_OK, tags=["Projetos"])
+async def relate_user_project(project_id: int, user_id: int, db: Session = Depends(get_db)):
+    user_project_association = UsuarioProjeto(user_id=user_id, project_id=project_id)
+    db.add(user_project_association)
+    db.commit()
+
+    return user_project_association
+
 
 ### CRUD tasks ###
 @app.post("/task/", status_code=status.HTTP_201_CREATED, tags=["Atividades"])
