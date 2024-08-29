@@ -9,10 +9,10 @@ Execute no repositório raiz:
 python -m venv env
 ```
 
-Após isso, vá ao repositório em /app e execute:
+Após isso, execute:
 
 ```
-pip freeze > requirements.txt
+pip install -r requirements.txt
 ```
 
 Após isso, no mesmo local, execute, com o docker local aberto:
